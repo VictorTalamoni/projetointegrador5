@@ -85,12 +85,12 @@
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.js"></script>
     <script src="https://cdn.datatables.net/2.2.2/js/dataTables.bootstrap5.js"></script>
 
-    <!-- Inicialização DataTables -->
+    <!-- Inicialização DataTables com idioma local -->
     <script>
         $(document).ready(function () {
             $('#posts').DataTable({
                 language: {
-                    url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/pt-BR.json"
+                    url: "/datatables/pt-BR.json"
                 }
             });
         });
