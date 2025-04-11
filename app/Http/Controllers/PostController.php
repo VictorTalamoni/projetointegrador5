@@ -12,8 +12,8 @@ class PostController extends Controller
      */
     public function index()
     {
-        $posts = Post::get()->toArray();
-        return view('posts.show')->with(compact('posts'));
+        $posts = Post::all();
+        return view('posts.show', compact('posts'));
     }
 
     /**
@@ -39,7 +39,7 @@ class PostController extends Controller
             $post->status = 1;
             $post->save();
     
-            return redirect()->back()->with('success_message', 'Valor enviado com sucesso');
+            return redirect('/posts')->with('success_message', 'Você adicionou um novo valor com sucesso');
         }
     }
 
@@ -56,7 +56,8 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        $postDetails = Post::find($post['id']);
+        return view('posts.edit')->with(compact('postDetails'));
     }
 
     /**
@@ -64,14 +65,28 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        if ($request->isMethod('put')) {
+            $data = $request->all();
+    
+            Post::where('_id', $post->_id)->update([
+                'titulo' => $data['titulo'],
+                'estado' => $data['estado'],
+                'preco'  => $data['preco'],
+            ]);
+    
+            return redirect('/posts')->with('success_message', 'Você alterou os valores com sucesso');
+        }
     }
+    
 
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+    
+        return redirect()->back()->with('success_message', 'Registro excluído com sucesso.');
     }
+    
 }
