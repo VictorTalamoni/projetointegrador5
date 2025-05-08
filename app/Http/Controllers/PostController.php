@@ -7,6 +7,18 @@ use Illuminate\Http\Request;
 
 class PostController extends Controller
 {
+    public function __construct()
+    {
+        // Permitir apenas o usuário com email b@a.a acessar create e store
+        $this->middleware(function ($request, $next) {
+            if (auth()->check() && auth()->user()->email === 'b@a.a') {
+                return $next($request);
+            }
+
+            abort(403, 'Acesso não autorizado.');
+        })->only(['create', 'store']);
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -29,16 +41,16 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->isMethod('post')){
+        if ($request->isMethod('post')) {
             $data = $request->all();
-    
+
             $post = new Post;
             $post->titulo = $data['titulo'];
             $post->estado = $data['estado'];
             $post->preco = $data['preco'];
             $post->status = 1;
             $post->save();
-    
+
             return redirect('/posts')->with('success_message', 'Você adicionou um novo valor com sucesso');
         }
     }
@@ -67,17 +79,16 @@ class PostController extends Controller
     {
         if ($request->isMethod('put')) {
             $data = $request->all();
-    
+
             Post::where('_id', $post->_id)->update([
                 'titulo' => $data['titulo'],
                 'estado' => $data['estado'],
                 'preco'  => $data['preco'],
             ]);
-    
+
             return redirect('/posts')->with('success_message', 'Você alterou os valores com sucesso');
         }
     }
-    
 
     /**
      * Remove the specified resource from storage.
@@ -85,8 +96,7 @@ class PostController extends Controller
     public function destroy(Post $post)
     {
         $post->delete();
-    
+
         return redirect()->back()->with('success_message', 'Registro excluído com sucesso.');
     }
-    
 }

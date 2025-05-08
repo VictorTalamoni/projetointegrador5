@@ -62,6 +62,9 @@
                                 <button type="submit" class="btn btn-primary">
                                     {{ __('Enviar') }}
                                 </button>
+                                 <a href="{{ route('posts.index') }}" class="btn btn-secondary ms-2">
+                                Voltar
+                                </a>
                             </div>
                         </div>
                     </form>

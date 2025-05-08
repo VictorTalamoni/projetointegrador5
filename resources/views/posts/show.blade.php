@@ -13,10 +13,15 @@
                     </div>
                 @endif
 
-                <!-- Botão para criar novo -->
+                <!-- Botão para criar novo, visível apenas para o usuário b@a.a -->
+                @auth
+                @if(Auth::user()->email === 'b@a.a')
                 <a href="{{ route('posts.create') }}" class="btn btn-success mb-3">
-                    Adicionar novo preço
+                 Adicionar novo preço
                 </a>
+                @endif
+                @endauth
+
 
                 <table id="posts" class="table table-bordered">
                     <thead>
