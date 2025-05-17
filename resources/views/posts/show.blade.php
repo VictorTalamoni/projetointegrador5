@@ -3,33 +3,52 @@
 @section('content')
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card">
                 <div class="card-header">{{ __('Preços') }}</div>
                 <div class="card-body">
+
                 @if(Session::has('success_message'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <strong>Boa!</strong> {!! session('success_message') !!}
                     </div>
                 @endif
 
-                <!-- Botão para criar novo, visível apenas para o usuário b@a.a -->
-                @auth
-                @if(Auth::user()->email === 'b@a.a')
-                <a href="{{ route('posts.create') }}" class="btn btn-success mb-3">
-                 Adicionar novo preço
-                </a>
-                @endif
-                @endauth
+                <!-- Botões adicionais -->
+                <div class="mb-3 d-flex justify-content-between">
+                    <div>
+                        @auth
+                        @if(Auth::user()->email === 'bababa@ba.com')
+                        <a href="{{ route('posts.json') }}" class="btn btn-outline-primary">
+                            📊 Ver Preços do JSON
+                        </a>
+                        <a href="{{ route('posts.importar') }}" class="btn btn-outline-success">
+                            ⬇️ Importar JSON para MongoDB
+                        </a>
+                        @endif
+                        @endauth
+                    </div>
 
+                    @auth
+                    @if(Auth::user()->email === 'bababa@ba.com')
+                        <a href="{{ route('posts.create') }}" class="btn btn-success">
+                            ➕ Adicionar novo preço
+                        </a>
+                    @endif
+                    @endauth
+                </div>
 
-                <table id="posts" class="table table-bordered">
+                <table id="posts" class="table table-bordered table-striped">
                     <thead>
                         <tr>
                             <th>Título</th>
                             <th>Estado</th>
                             <th>Preço</th>
-                            <th style="min-width: 150px;" class="text-center">Ações</th>
+                            @auth
+                            @if(Auth::user()->email === 'bababa@ba.com')
+                            <th class="text-center" style="min-width: 150px;">Ações</th>
+                            @endif
+                            @endauth
                         </tr>
                     </thead>
                     <tbody>
@@ -37,8 +56,11 @@
                         <tr>
                             <td>{{ $post['titulo'] }}</td>
                             <td>{{ $post['estado'] }}</td>
-                            <td>{{ $post['preco'] }}</td>
+                            <td>R$ {{ number_format((float) $post['preco'], 2, ',', '.') }}</td>
+                            @auth
+                            @if(Auth::user()->email === 'bababa@ba.com')
                             <td class="text-center">
+                                @if(isset($post['_id']))
                                 <a href="{{ route('posts.edit', (string) $post['_id']) }}" class="btn btn-sm btn-primary me-1">
                                     Atualizar
                                 </a>
@@ -50,7 +72,12 @@
                                         Excluir
                                     </button>
                                 </form>
+                                @else
+                                <span class="text-muted">--</span>
+                                @endif
                             </td>
+                            @endif
+                            @endauth
                         </tr>
                         @endforeach
                     </tbody>

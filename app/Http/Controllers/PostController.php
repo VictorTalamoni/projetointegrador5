@@ -4,45 +4,36 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class PostController extends Controller
 {
     public function __construct()
     {
-        // Permitir apenas o usuário com email b@a.a acessar create e store
         $this->middleware(function ($request, $next) {
-            if (auth()->check() && auth()->user()->email === 'b@a.a') {
+            if (auth()->check() && auth()->user()->email === 'bababa@ba.com') {
                 return $next($request);
             }
-
             abort(403, 'Acesso não autorizado.');
-        })->only(['create', 'store']);
+        })->only(['create', 'store', 'edit', 'update', 'destroy', 'importarJsonParaMongo', 'showPrecosJson']);
     }
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $posts = Post::all();
         return view('posts.show', compact('posts'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         return view('posts.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         if ($request->isMethod('post')) {
             $data = $request->all();
+            $data['preco'] = floatval(str_replace(',', '.', $data['preco']));
 
             $post = new Post;
             $post->titulo = $data['titulo'];
@@ -55,30 +46,17 @@ class PostController extends Controller
         }
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Post $post)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
     public function edit(Post $post)
     {
         $postDetails = Post::find($post['id']);
         return view('posts.edit')->with(compact('postDetails'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, Post $post)
     {
         if ($request->isMethod('put')) {
             $data = $request->all();
+            $data['preco'] = floatval(str_replace(',', '.', $data['preco']));
 
             Post::where('_id', $post->_id)->update([
                 'titulo' => $data['titulo'],
@@ -90,13 +68,57 @@ class PostController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Post $post)
     {
         $post->delete();
-
         return redirect()->back()->with('success_message', 'Registro excluído com sucesso.');
+    }
+
+    public function showPrecosJson()
+    {
+        $jsonPath = public_path('precos.json');
+
+        if (!file_exists($jsonPath)) {
+            return back()->with('error_message', 'Arquivo de preços não encontrado.');
+        }
+
+        $dados = json_decode(file_get_contents($jsonPath), true);
+
+        $posts = [];
+
+        foreach ($dados as $estado => $preco) {
+            $posts[] = [
+                '_id' => $estado,
+                'titulo' => 'Preço Médio',
+                'estado' => $estado,
+                'preco' => $preco
+            ];
+        }
+
+        return view('posts.show', compact('posts'));
+    }
+
+    public function importarJsonParaMongo()
+    {
+        $jsonPath = public_path('precos.json');
+
+        if (!File::exists($jsonPath)) {
+            return back()->with('error_message', 'Arquivo de preços não encontrado.');
+        }
+
+        $dados = json_decode(file_get_contents($jsonPath), true);
+
+        foreach ($dados as $estado => $preco) {
+            Post::updateOrCreate(
+                ['estado' => $estado],
+                [
+                    'titulo' => 'Preço Médio',
+                    'preco' => floatval(str_replace(',', '.', $preco)),
+                    'status' => 1
+                ]
+            );
+        }
+
+        return redirect('/posts')->with('success_message', 'Dados do JSON importados para o banco com sucesso.');
     }
 }

@@ -8,5 +8,13 @@ use MongoDB\Laravel\Eloquent\Model;
 class Post extends Model
 {
     use HasFactory;
+
     protected $connection = 'mongodb';
+
+    protected $fillable = [
+        'titulo',
+        'estado',
+        'preco',
+        'status',
+    ];
 }

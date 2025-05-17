@@ -47,7 +47,7 @@
                             <label for="preco" class="col-md-4 col-form-label text-md-end">{{ __('preco') }}</label>
 
                             <div class="col-md-6">
-                                <input id="preco" type="number" class="form-control @error('preco') is-invalid @enderror" name="preco" required autocomplete="new-preco">
+                                <input id="preco" type="text" inputmode="decimal" pattern="[0-9]+([,\.]?[0-9]{1,2})?" class="form-control @error('preco') is-invalid @enderror" name="preco" value="{{ old('preco') }}" required autocomplete="preco">
 
                                 @error('preco')
                                     <span class="invalid-feedback" role="alert">
