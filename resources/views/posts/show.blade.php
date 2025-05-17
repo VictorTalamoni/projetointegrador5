@@ -19,9 +19,6 @@
                     <div>
                         @auth
                         @if(Auth::user()->email === 'bababa@ba.com')
-                        <a href="{{ route('posts.json') }}" class="btn btn-outline-primary">
-                            📊 Ver Preços do JSON
-                        </a>
                         <a href="{{ route('posts.importar') }}" class="btn btn-outline-success">
                             ⬇️ Importar JSON para MongoDB
                         </a>
@@ -32,7 +29,7 @@
                     @auth
                     @if(Auth::user()->email === 'bababa@ba.com')
                         <a href="{{ route('posts.create') }}" class="btn btn-success">
-                            ➕ Adicionar novo preço
+                            + Adicionar novo preço
                         </a>
                     @endif
                     @endauth
