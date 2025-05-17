@@ -20,7 +20,7 @@
                         @auth
                         @if(Auth::user()->email === 'bababa@ba.com')
                         <a href="{{ route('posts.importar') }}" class="btn btn-outline-success">
-                            Importar valores
+                            Importar Valores
                         </a>
                         @endif
                         @endauth
